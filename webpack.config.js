@@ -1,6 +1,9 @@
 const Webpack             = require('webpack')
 const path                = require('path')
 const nodeModulesPath     = path.resolve(__dirname, 'node_modules')
+const ExtractTextPlugin   = require('extract-text-webpack-plugin')
+const extractCSS          = new ExtractTextPlugin('stylesheet.css')
+
 
 module.exports = {
   resolve: {
@@ -45,13 +48,22 @@ module.exports = {
       {
         test: /\.json$/,
         loader: "json-loader"
+      },
+      {
+        test: /\.scss$/,
+        loader: extractCSS.extract("css-loader!sass-loader!autoprefixer-loader"),
+        exclude: [nodeModulesPath]
       }
     ]
+  },
+  devServer: {
+    historyApiFallback: true
   },
   sassLoader: {
     includePaths: [path.resolve(__dirname, 'client')]
   },
   plugins: [
-    new Webpack.HotModuleReplacementPlugin()
+    new Webpack.HotModuleReplacementPlugin(),
+    extractCSS
   ]
 }
